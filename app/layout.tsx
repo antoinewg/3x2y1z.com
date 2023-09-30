@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { ClerkProvider } from '@clerk/nextjs'
 
 import { Toaster } from 'react-hot-toast'
 
@@ -11,8 +12,8 @@ import { Header } from '@/components/header'
 
 export const metadata: Metadata = {
   title: {
-    default: 'Next.js AI Chatbot',
-    template: `%s - Next.js AI Chatbot`
+    default: '3X2Y1Z',
+    template: `%s - 3X2Y1Z`
   },
   description: 'An AI-powered chatbot template built with Next.js and Vercel.',
   themeColor: [
@@ -32,25 +33,28 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head />
-      <body
-        className={cn(
-          'font-sans antialiased',
-          fontSans.variable,
-          fontMono.variable
-        )}
-      >
-        <Toaster />
-        <Providers attribute="class" defaultTheme="system" enableSystem>
-          <div className="flex flex-col min-h-screen">
-            {/* @ts-ignore */}
-            <Header />
-            <main className="flex flex-col flex-1 bg-muted/50">{children}</main>
-          </div>
-          <TailwindIndicator />
-        </Providers>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <head />
+        <body
+          className={cn(
+            'font-sans antialiased',
+            fontSans.variable,
+            fontMono.variable
+          )}
+        >
+          <Toaster />
+          <Providers attribute="class" defaultTheme="system" enableSystem>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <main className="flex flex-1 flex-col bg-muted/50">
+                {children}
+              </main>
+            </div>
+            <TailwindIndicator />
+          </Providers>
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }

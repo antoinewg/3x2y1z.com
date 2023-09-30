@@ -20,6 +20,7 @@
   - [Radix UI](https://radix-ui.com) for headless component primitives
   - Icons from [Phosphor Icons](https://phosphoricons.com)
 - Chat History, rate limiting, and session storage with [Vercel KV](https://vercel.com/storage/kv)
+- [Clerk](https://clerk.com/docs) for authentication and user management
 
 ## Model Providers
 
