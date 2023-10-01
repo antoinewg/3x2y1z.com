@@ -3,21 +3,18 @@ import Link from 'next/link'
 
 import { cn } from '@/lib/utils'
 import { clearChats } from '@/app/actions'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 import { Sidebar } from '@/components/sidebar'
 import { SidebarList } from '@/components/sidebar-list'
 import {
   IconGitHub,
   IconNextChat,
   IconSeparator,
-  IconVercel
 } from '@/components/ui/icons'
 import { SidebarFooter } from '@/components/sidebar-footer'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { ClearHistory } from '@/components/clear-history'
-import { UserMenu } from '@/components/user-menu'
-import { LoginButton } from '@/components/login-button'
-import { currentUser } from '@clerk/nextjs'
+import { UserButton, currentUser } from '@clerk/nextjs'
 
 export async function Header() {
   const user = await currentUser()
@@ -44,33 +41,18 @@ export async function Header() {
         )}
         <div className="flex items-center">
           <IconSeparator className="h-6 w-6 text-muted-foreground/50" />
-          {user ? (
-            <UserMenu user={user} />
-          ) : (
-            <Button variant="link" asChild className="-ml-2">
-              <Link href="/sign-in?callbackUrl=/">Login</Link>
-            </Button>
-          )}
+          <UserButton afterSignOutUrl="/" />
         </div>
       </div>
       <div className="flex items-center justify-end space-x-2">
         <a
           target="_blank"
-          href="https://github.com/vercel/nextjs-ai-chatbot/"
+          href="https://github.com/antoinewg/3x2y1z.com"
           rel="noopener noreferrer"
           className={cn(buttonVariants({ variant: 'outline' }))}
         >
           <IconGitHub />
           <span className="ml-2 hidden md:flex">GitHub</span>
-        </a>
-        <a
-          href="https://github.com/vercel/nextjs-ai-chatbot/"
-          target="_blank"
-          className={cn(buttonVariants())}
-        >
-          <IconVercel className="mr-2" />
-          <span className="hidden sm:block">Deploy to Vercel</span>
-          <span className="sm:hidden">Deploy</span>
         </a>
       </div>
     </header>

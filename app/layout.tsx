@@ -15,13 +15,13 @@ export const metadata: Metadata = {
     default: '3X2Y1Z',
     template: `%s - 3X2Y1Z`
   },
-  description: 'An AI-powered chatbot template built with Next.js and Vercel.',
+  description: 'An AI-powered chatbot.',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: 'white' },
     { media: '(prefers-color-scheme: dark)', color: 'black' }
   ],
   icons: {
-    icon: '/favicon.ico',
+    icon: '/favicon.svg',
     shortcut: '/favicon-16x16.png',
     apple: '/apple-touch-icon.png'
   }
