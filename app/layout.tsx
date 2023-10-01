@@ -8,6 +8,7 @@ import { fontMono, fontSans } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
 import { Providers } from '@/components/providers'
 import { Header } from '@/components/header'
+import ConvexClientProvider from './ConvexClientProvider'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.3x2y1z.com/'),
@@ -48,7 +49,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             <div className="flex min-h-screen flex-col">
               <Header />
               <main className="flex flex-1 flex-col bg-muted/50">
-                {children}
+                <ConvexClientProvider>{children}</ConvexClientProvider>
               </main>
             </div>
           </Providers>
