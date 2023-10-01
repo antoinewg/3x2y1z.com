@@ -26,11 +26,9 @@
 
 This template ships with OpenAI `gpt-4` as the default.
 
-## Creating a KV Database Instance
+## Database
 
-Follow the steps outlined in the [quick start guide](https://vercel.com/docs/storage/vercel-kv/quickstart#create-a-kv-database) provided by Vercel. This guide will assist you in creating and configuring your KV database instance on Vercel, enabling your application to interact with it.
-
-Remember to update your environment variables (`KV_URL`, `KV_REST_API_URL`, `KV_REST_API_TOKEN`, `KV_REST_API_READ_ONLY_TOKEN`) in the `.env` file with the appropriate credentials provided during the KV database setup.
+This branch is using [convex](https://www.convex.dev/) instead of Vercel KV as it's primary database. This is not on main as it is a technology test.
 
 ## Running locally
 
