@@ -24,7 +24,7 @@
 
 ## Model Providers
 
-This template ships with OpenAI `gpt-3.5-turbo` as the default.
+This template ships with OpenAI `gpt-4` as the default.
 
 ## Creating a KV Database Instance
 
