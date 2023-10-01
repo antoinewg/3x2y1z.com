@@ -11,6 +11,7 @@ import { Providers } from '@/components/providers'
 import { Header } from '@/components/header'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.3x2y1z.com/'),
   title: {
     default: '3X2Y1Z',
     template: `%s - 3X2Y1Z`
