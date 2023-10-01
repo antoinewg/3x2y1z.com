@@ -1,10 +1,16 @@
 import { nanoid } from '@/lib/utils'
 import { Chat } from '@/components/chat'
+import { UserButton } from '@clerk/nextjs'
 
 export const runtime = 'edge'
 
-export default function IndexPage() {
+export default function Home() {
   const id = nanoid()
 
-  return <Chat id={id} />
+  return (
+    <div>
+      <UserButton afterSignOutUrl="/" />
+      <Chat id={id} />
+    </div>
+  )
 }
