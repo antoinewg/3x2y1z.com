@@ -1,5 +1,4 @@
 <a href="https://www.3x2y1z.com">
-  <img alt="Next.js 13 and app template Router-ready AI chatbot." src="https://www.3x2y1z.com/opengraph-image.png">
   <h1 align="center">3x2y1z AI chatbot</h1>
 </a>
 
@@ -7,6 +6,10 @@
   An open-source AI chatbot app template built with Next.js, the Vercel AI SDK, OpenAI, and Vercel KV.
 </p>
 
+What's added in this repo, more than in the template:
+ - authentication with Clerk
+ - database with convex.dev
+ - use gpt-4 instead of gpt-3.5
 
 ## Features
 
