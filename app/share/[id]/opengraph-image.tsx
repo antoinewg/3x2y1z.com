@@ -1,6 +1,7 @@
+import { api } from '@/convex/_generated/api'
+import { Id } from '@/convex/_generated/dataModel'
+import { ConvexHttpClient } from 'convex/browser'
 import { ImageResponse } from 'next/server'
-
-import { getSharedChat } from '@/app/actions'
 
 export const runtime = 'edge'
 
@@ -19,14 +20,16 @@ interface ImageProps {
   }
 }
 
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+
 export default async function Image({ params }: ImageProps) {
-  const chat = await getSharedChat(params.id)
+  const chat = await convex.query(api.chats.get, { id: params.id as Id<'chats'> })
 
   if (!chat || !chat?.sharePath) {
     return null
   }
 
-  const textAlign = chat?.title?.length > 40 ? 'items-start' : 'items-center'
+  const textAlign = chat?.title && chat?.title?.length > 40 ? 'items-start' : 'items-center'
 
   return new ImageResponse(
     (
@@ -45,7 +48,7 @@ export default async function Image({ params }: ImageProps) {
               </svg>
             </div>
             <div tw="flex text-white font-bold text-4xl leading-normal ml-10">
-              {chat.title.length > 120
+              {chat.title && chat.title?.length > 120
                 ? `${chat.title.slice(0, 120)}...`
                 : chat.title}
             </div>
@@ -70,6 +73,6 @@ export default async function Image({ params }: ImageProps) {
         </div>
       </div>
     ),
-    size,
+    size
   )
 }

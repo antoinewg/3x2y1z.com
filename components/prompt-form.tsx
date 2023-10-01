@@ -12,19 +12,26 @@ import {
 import { useEnterSubmit } from '@/lib/hooks/use-enter-submit'
 import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
+import { useMutation } from 'convex/react'
+import { api } from '@/convex/_generated/api'
+import { Id } from '@/convex/_generated/dataModel'
 
 export interface PromptProps
   extends Pick<UseChatHelpers, 'input' | 'setInput'> {
   onSubmit: (value: string) => Promise<void>
   isLoading: boolean
+  chatId: Id<'chats'>
 }
 
 export function PromptForm({
+  chatId,
   onSubmit,
   input,
   setInput,
   isLoading
 }: PromptProps) {
+  const createChat = useMutation(api.chats.create)
+  const createMessage = useMutation(api.messages.create)
   const { formRef, onKeyDown } = useEnterSubmit()
   const inputRef = React.useRef<HTMLTextAreaElement>(null)
   const router = useRouter()
@@ -43,6 +50,7 @@ export function PromptForm({
           return
         }
         setInput('')
+        await createMessage({ content: input, role: 'user', chatId })
         await onSubmit(input)
       }}
       ref={formRef}
@@ -51,10 +59,10 @@ export function PromptForm({
         <Tooltip>
           <TooltipTrigger asChild>
             <button
-              onClick={e => {
+              onClick={async e => {
                 e.preventDefault()
-                router.refresh()
-                router.push('/')
+                const chat = await createChat({ title: 'new chat' })
+                router.push(`/chat/${chat?._id}`)
               }}
               className={cn(
                 buttonVariants({ size: 'sm', variant: 'outline' }),

@@ -1,10 +1,9 @@
-import { nanoid } from '@/lib/utils'
-import { Chat } from '@/components/chat'
-
-export const runtime = 'edge'
+import { EmptyScreen } from '@/components/empty-screen'
 
 export default function Home() {
-  const id = nanoid()
-
-  return <Chat id={id} />
+  return (
+    <div className="pb-[200px] pt-4 md:pt-10">
+      <EmptyScreen />
+    </div>
+  )
 }

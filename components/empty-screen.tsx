@@ -1,12 +1,12 @@
-import { UseChatHelpers } from 'ai/react'
+'use client'
 
 import { Button } from '@/components/ui/button'
 import { IconArrowRight } from '@/components/ui/icons'
-import { useQuery } from 'convex/react';
-import { api } from '@/convex/_generated/api';
+import { useQuery } from 'convex/react'
+import { api } from '@/convex/_generated/api'
 
-export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
-  const examples = useQuery(api.examples.get);
+export function EmptyScreen({ setInput }: { setInput: (input: string) => void }) {
+  const examples = useQuery(api.examples.get)
 
   return (
     <div className="mx-auto max-w-2xl px-4">

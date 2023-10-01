@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { Doc } from '../convex/_generated/dataModel'
 
-import { type Chat } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { IconMessage, IconUsers } from '@/components/ui/icons'
@@ -14,15 +14,13 @@ import {
 } from '@/components/ui/tooltip'
 
 interface SidebarItemProps {
-  chat: Chat
+  chat: Doc<'chats'>
   children: React.ReactNode
 }
 
 export function SidebarItem({ chat, children }: SidebarItemProps) {
   const pathname = usePathname()
   const isActive = pathname === chat.path
-
-  if (!chat?.id) return null
 
   return (
     <div className="relative">
@@ -42,7 +40,7 @@ export function SidebarItem({ chat, children }: SidebarItemProps) {
         )}
       </div>
       <Link
-        href={chat.path}
+        href={`/chat/${chat._id}`}
         className={cn(
           buttonVariants({ variant: 'ghost' }),
           'group w-full pl-8 pr-16',

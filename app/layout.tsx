@@ -1,5 +1,4 @@
 import { Metadata } from 'next'
-import { ClerkProvider } from '@clerk/nextjs'
 
 import { Toaster } from 'react-hot-toast'
 
@@ -9,6 +8,7 @@ import { cn } from '@/lib/utils'
 import { Providers } from '@/components/providers'
 import { Header } from '@/components/header'
 import ConvexClientProvider from './ConvexClientProvider'
+import { ClerkProvider } from '@clerk/nextjs'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.3x2y1z.com/'),
@@ -34,7 +34,9 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+    >
       <html lang="en" suppressHydrationWarning>
         <head />
         <body
@@ -46,12 +48,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
         >
           <Toaster />
           <Providers attribute="class" defaultTheme="system" enableSystem>
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <main className="flex flex-1 flex-col bg-muted/50">
-                <ConvexClientProvider>{children}</ConvexClientProvider>
-              </main>
-            </div>
+            <ConvexClientProvider>
+              <div className="flex min-h-screen flex-col">
+                <Header />
+                <main className="flex flex-1 flex-col bg-muted/50">
+                  {children}
+                </main>
+              </div>
+            </ConvexClientProvider>
           </Providers>
         </body>
       </html>

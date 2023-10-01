@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { PromptForm } from '@/components/prompt-form'
 import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
+import { Id } from '@/convex/_generated/dataModel'
 
 export interface ChatPanelProps
   extends Pick<
@@ -16,7 +17,7 @@ export interface ChatPanelProps
     | 'input'
     | 'setInput'
   > {
-  id?: string
+  id: Id<'chats'>
 }
 
 export function ChatPanel({
@@ -57,6 +58,7 @@ export function ChatPanel({
           )}
         </div>
         <PromptForm
+          chatId={id}
           onSubmit={async value => {
             await append({
               id,

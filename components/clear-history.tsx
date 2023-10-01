@@ -2,9 +2,7 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
-import { toast } from 'react-hot-toast'
 
-import { ServerActionResult } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
@@ -18,15 +16,14 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 import { IconSpinner } from '@/components/ui/icons'
+import { useMutation } from 'convex/react'
+import { api } from '@/convex/_generated/api'
 
-interface ClearHistoryProps {
-  clearChats: () => ServerActionResult<void>
-}
-
-export function ClearHistory({ clearChats }: ClearHistoryProps) {
+export function ClearHistory() {
+  const router = useRouter()
   const [open, setOpen] = React.useState(false)
   const [isPending, startTransition] = React.useTransition()
-  const router = useRouter()
+  const clearHistory = useMutation(api.chats.removeAll)
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -51,13 +48,7 @@ export function ClearHistory({ clearChats }: ClearHistoryProps) {
             onClick={event => {
               event.preventDefault()
               startTransition(async () => {
-                const result = await clearChats()
-
-                if (result && 'error' in result) {
-                  toast.error(result.error)
-                  return
-                }
-
+                await clearHistory()
                 setOpen(false)
                 router.push('/')
               })

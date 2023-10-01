@@ -4,7 +4,6 @@ import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 
-import { type Chat, ServerActionResult } from '@/lib/types'
 import { cn, formatDate } from '@/lib/utils'
 import {
   AlertDialog,
@@ -38,46 +37,20 @@ import {
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip'
+import { Doc, Id } from '@/convex/_generated/dataModel'
+import { useMutation, useQuery } from 'convex/react'
+import { api } from '@/convex/_generated/api'
 
 interface SidebarActionsProps {
-  chat: Chat
-  removeChat: (args: { id: string; path: string }) => ServerActionResult<void>
-  shareChat: (chat: Chat) => ServerActionResult<Chat>
+  chat: Doc<'chats'>
 }
 
-export function SidebarActions({
-  chat,
-  removeChat,
-  shareChat
-}: SidebarActionsProps) {
+export function SidebarActions({ chat }: SidebarActionsProps) {
+  const router = useRouter()
+  const removeChat = useMutation(api.chats.remove)
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false)
   const [shareDialogOpen, setShareDialogOpen] = React.useState(false)
   const [isRemovePending, startRemoveTransition] = React.useTransition()
-  const [isSharePending, startShareTransition] = React.useTransition()
-  const router = useRouter()
-
-  const copyShareLink = React.useCallback(async (chat: Chat) => {
-    if (!chat.sharePath) {
-      return toast.error('Could not copy share link to clipboard')
-    }
-
-    const url = new URL(window.location.href)
-    url.pathname = chat.sharePath
-    navigator.clipboard.writeText(url.toString())
-    setShareDialogOpen(false)
-    toast.success('Share link copied to clipboard', {
-      style: {
-        borderRadius: '10px',
-        background: '#333',
-        color: '#fff',
-        fontSize: '14px'
-      },
-      iconTheme: {
-        primary: 'white',
-        secondary: 'black'
-      }
-    })
-  }, [])
 
   return (
     <>
@@ -111,65 +84,7 @@ export function SidebarActions({
         </Tooltip>
       </div>
       <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Share link to chat</DialogTitle>
-            <DialogDescription>
-              Anyone with the URL will be able to view the shared chat.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-1 rounded-md border p-4 text-sm">
-            <div className="font-medium">{chat.title}</div>
-            <div className="text-muted-foreground">
-              {formatDate(chat.createdAt)} · {chat.messages.length} messages
-            </div>
-          </div>
-          <DialogFooter className="items-center">
-            {chat.sharePath && (
-              <Link
-                href={chat.sharePath}
-                className={cn(
-                  badgeVariants({ variant: 'secondary' }),
-                  'mr-auto'
-                )}
-                target="_blank"
-              >
-                <IconUsers className="mr-2" />
-                {chat.sharePath}
-              </Link>
-            )}
-            <Button
-              disabled={isSharePending}
-              onClick={() => {
-                startShareTransition(async () => {
-                  if (chat.sharePath) {
-                    await new Promise(resolve => setTimeout(resolve, 500))
-                    copyShareLink(chat)
-                    return
-                  }
-
-                  const result = await shareChat(chat)
-
-                  if (result && 'error' in result) {
-                    toast.error(result.error)
-                    return
-                  }
-
-                  copyShareLink(result)
-                })
-              }}
-            >
-              {isSharePending ? (
-                <>
-                  <IconSpinner className="mr-2 animate-spin" />
-                  Copying...
-                </>
-              ) : (
-                <>Copy link</>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
+        <ShareDialogContent chatId={chat._id} closeDialog={() => setShareDialogOpen(false)} />
       </Dialog>
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
@@ -189,18 +104,8 @@ export function SidebarActions({
               onClick={event => {
                 event.preventDefault()
                 startRemoveTransition(async () => {
-                  const result = await removeChat({
-                    id: chat.id,
-                    path: chat.path
-                  })
-
-                  if (result && 'error' in result) {
-                    toast.error(result.error)
-                    return
-                  }
-
+                  await removeChat({ id: chat._id })
                   setDeleteDialogOpen(false)
-                  router.refresh()
                   router.push('/')
                   toast.success('Chat deleted')
                 })
@@ -213,5 +118,90 @@ export function SidebarActions({
         </AlertDialogContent>
       </AlertDialog>
     </>
+  )
+}
+
+function ShareDialogContent({ chatId, closeDialog }: { chatId: Id<'chats'>, closeDialog: () => void }) {
+  const chat = useQuery(api.chats.get, { id: chatId })
+  const shareChat = useMutation(api.chats.share)
+  const [isSharePending, startShareTransition] = React.useTransition()
+
+  const copyShareLink = React.useCallback(async (sharePath: string) => {
+    if (!sharePath) {
+      return toast.error('Could not copy share link to clipboard')
+    }
+
+    const url = new URL(window.location.href)
+    url.pathname = sharePath
+    navigator.clipboard.writeText(url.toString())
+    closeDialog()
+    toast.success('Share link copied to clipboard', {
+      style: {
+        borderRadius: '10px',
+        background: '#333',
+        color: '#fff',
+        fontSize: '14px'
+      },
+      iconTheme: {
+        primary: 'white',
+        secondary: 'black'
+      }
+    })
+  }, [])
+
+  return (
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Share link to chat</DialogTitle>
+        <DialogDescription>
+          Anyone with the URL will be able to view the shared chat.
+        </DialogDescription>
+      </DialogHeader>
+      <div className="space-y-1 rounded-md border p-4 text-sm">
+        <div className="font-medium">{chat?.title}</div>
+        <div className="text-muted-foreground">
+          {formatDate(chat?._creationTime ?? 0)} · {chat?.messages.length} messages
+        </div>
+      </div>
+      <DialogFooter className="items-center">
+        {chat?.sharePath && (
+          <Link
+            href={chat?.sharePath}
+            className={cn(
+              badgeVariants({ variant: 'secondary' }),
+              'mr-auto'
+            )}
+            target="_blank"
+          >
+            <IconUsers className="mr-2" />
+            {chat.sharePath}
+          </Link>
+        )}
+        <Button
+          disabled={isSharePending}
+          onClick={() => {
+            startShareTransition(async () => {
+              if (chat?.sharePath) {
+                await new Promise(resolve => setTimeout(resolve, 500))
+                copyShareLink(chat.sharePath)
+                return
+              }
+
+              const sharePath = await shareChat({ id: chatId })
+              copyShareLink(sharePath)
+            })
+          }}
+        >
+          {isSharePending ? (
+            <>
+              <IconSpinner className="mr-2 animate-spin" />
+              Copying...
+            </>
+          ) : (
+            <>Copy link</>
+          )}
+        </Button>
+      </DialogFooter>
+    </DialogContent>
   )
 }

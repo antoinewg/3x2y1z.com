@@ -1,9 +1,10 @@
-import { kv } from '@vercel/kv'
 import { OpenAIStream, StreamingTextResponse } from 'ai'
 import { Configuration, OpenAIApi } from 'openai-edge'
 
-import { nanoid } from '@/lib/utils'
 import { auth } from '@clerk/nextjs/server'
+import { ConvexHttpClient } from 'convex/browser'
+import { api } from '@/convex/_generated/api'
+import { Id } from '@/convex/_generated/dataModel'
 
 export const runtime = 'edge'
 
@@ -12,10 +13,10 @@ const configuration = new Configuration({
 })
 
 const openai = new OpenAIApi(configuration)
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
 
 export async function POST(req: Request) {
   const json = await req.json()
-  const { messages, previewToken } = json
   const { userId } = auth()
 
   if (!userId) {
@@ -24,13 +25,9 @@ export async function POST(req: Request) {
     })
   }
 
-  if (previewToken) {
-    configuration.apiKey = previewToken
-  }
-
   const res = await openai.createChatCompletion({
     model: 'gpt-4',
-    messages,
+    messages: json.messages,
     temperature: 0.7,
     stream: true
   })
@@ -38,28 +35,17 @@ export async function POST(req: Request) {
   const stream = OpenAIStream(res, {
     async onCompletion(completion) {
       const title = json.messages[0].content.substring(0, 100)
-      const id = json.id ?? nanoid()
-      const createdAt = Date.now()
-      const path = `/chat/${id}`
-      const payload = {
-        id,
-        title,
-        userId,
-        createdAt,
-        path,
-        messages: [
-          ...messages,
-          {
-            content: completion,
-            role: 'assistant'
-          }
-        ]
+      const chat = await convex.query(api.chats.get, { id: json.id })
+
+      if (chat?._id) {
+        await convex.mutation(api.chats.update, { id: chat._id, title })
+        await convex.mutation(api.messages.create, {
+          content: completion,
+          role: 'assistant',
+          chatId: chat._id,
+          authorId: chat?.authorId as Id<'users'>
+        })
       }
-      await kv.hmset(`chat:${id}`, payload)
-      await kv.zadd(`user:chat:${userId}`, {
-        score: createdAt,
-        member: `chat:${id}`
-      })
     }
   })
 

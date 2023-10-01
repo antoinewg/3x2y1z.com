@@ -1,12 +1,16 @@
 import { type Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 
-import { getChat } from '@/app/actions'
 import { Chat } from '@/components/chat'
 import { auth } from '@clerk/nextjs/server'
+import { ConvexHttpClient } from 'convex/browser'
+import { api } from '@/convex/_generated/api'
+import { Id } from '@/convex/_generated/dataModel'
 
 export const runtime = 'edge'
 export const preferredRegion = 'home'
+
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
 
 export interface ChatPageProps {
   params: {
@@ -23,9 +27,12 @@ export async function generateMetadata({
     return {}
   }
 
-  const chat = await getChat(params.id, userId)
+  const chat = await convex.query(api.chats.get, {
+    id: params.id as Id<'chats'>
+  })
+
   return {
-    title: chat?.title.toString().slice(0, 50) ?? 'Chat'
+    title: chat?.title?.toString().slice(0, 50) ?? 'Chat'
   }
 }
 
@@ -36,15 +43,13 @@ export default async function ChatPage({ params }: ChatPageProps) {
     redirect(`/sign-in?next=/chat/${params.id}`)
   }
 
-  const chat = await getChat(params.id, userId)
+  const chat = await convex.query(api.chats.get, {
+    id: params.id as Id<'chats'>
+  })
 
-  if (!chat) {
+  if (!chat || !chat._id) {
     notFound()
   }
 
-  if (chat?.userId !== userId) {
-    notFound()
-  }
-
-  return <Chat id={chat.id} initialMessages={chat.messages} />
+  return <Chat id={chat._id} initialMessages={chat.messages} />
 }

@@ -2,8 +2,10 @@ import { type Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { formatDate } from '@/lib/utils'
-import { getSharedChat } from '@/app/actions'
 import { ChatList } from '@/components/chat-list'
+import { ConvexHttpClient } from 'convex/browser'
+import { api } from '@/convex/_generated/api'
+import { Id } from '@/convex/_generated/dataModel'
 
 export const preferredRegion = 'home'
 
@@ -13,18 +15,20 @@ interface SharePageProps {
   }
 }
 
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+
 export async function generateMetadata({
   params
 }: SharePageProps): Promise<Metadata> {
-  const chat = await getSharedChat(params.id)
+  const chat = await convex.query(api.chats.getSharedChat, { id: params.id as Id<'chats'> })
 
   return {
-    title: chat?.title.slice(0, 50) ?? 'Chat'
+    title: chat?.title?.slice(0, 50) ?? 'Chat'
   }
 }
 
 export default async function SharePage({ params }: SharePageProps) {
-  const chat = await getSharedChat(params.id)
+  const chat = await convex.query(api.chats.getSharedChat, { id: params.id as Id<'chats'> })
 
   if (!chat || !chat?.sharePath) {
     notFound()
@@ -38,7 +42,7 @@ export default async function SharePage({ params }: SharePageProps) {
             <div className="space-y-1 md:-mx-8">
               <h1 className="text-2xl font-bold">{chat.title}</h1>
               <div className="text-sm text-muted-foreground">
-                {formatDate(chat.createdAt)} · {chat.messages.length} messages
+                {formatDate(chat._creationTime ?? 0)} · {chat.messages.length} messages
               </div>
             </div>
           </div>
