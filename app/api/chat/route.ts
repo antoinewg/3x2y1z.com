@@ -4,6 +4,7 @@ import { initializeAgentExecutorWithOptions } from 'langchain/agents'
 import { ChatOpenAI } from 'langchain/chat_models/openai'
 import { Calculator } from 'langchain/tools/calculator'
 
+import { SerpAPI } from "langchain/tools";
 import { AIMessage, ChatMessage, HumanMessage } from 'langchain/schema'
 import { BufferMemory, ChatMessageHistory } from 'langchain/memory'
 
@@ -45,7 +46,8 @@ export async function POST(req: Request) {
     .map(convertVercelMessageToLangChainMessage)
   const currentMessageContent = messages[messages.length - 1].content
 
-  const tools = [new Calculator()]
+  // Requires process.env.SERPAPI_API_KEY to be set: https://serpapi.com/
+  const tools = [new Calculator(), new SerpAPI()];
   const chat = new ChatOpenAI({ modelName: 'gpt-4', temperature: 0.7 })
 
   /**
