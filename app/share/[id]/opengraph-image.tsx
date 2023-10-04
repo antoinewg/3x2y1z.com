@@ -70,6 +70,6 @@ export default async function Image({ params }: ImageProps) {
         </div>
       </div>
     ),
-    size,
+    size
   )
 }

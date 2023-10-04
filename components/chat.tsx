@@ -9,7 +9,6 @@ import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { toast } from 'react-hot-toast'
 
-const IS_PREVIEW = process.env.VERCEL_ENV === 'preview'
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
   id?: string
@@ -21,7 +20,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       initialMessages,
       id,
       body: {
-        id,
+        id
       },
       onResponse(response) {
         if (response.status === 401) {
