@@ -51,10 +51,11 @@ export default function AddAssistant() {
             <Switch name="retrieval" defaultValue="on" />
           </div>
 
-          <div className='flex items-center justify-between'>
+          {/* TODO(antoinewg): enable functions */}
+          {/* <div className='flex items-center justify-between'>
             <label className="text-sm" htmlFor="function">Function</label>
             <Switch name="function" />
-          </div>
+          </div> */}
 
           {/* TODO(antoinewg): upload files */}
 
