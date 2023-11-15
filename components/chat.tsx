@@ -8,7 +8,7 @@ import { ChatPanel } from '@/components/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { toast } from 'react-hot-toast'
-import { Assistant } from '@/app/assistants/types'
+import { Assistant } from 'openai/resources/beta/assistants/assistants'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
