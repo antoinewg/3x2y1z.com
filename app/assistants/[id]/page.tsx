@@ -1,21 +1,20 @@
 import { redirect } from 'next/navigation'
 
 import { auth } from '@clerk/nextjs/server'
-import AddAssistant from './add-assistant'
 
 export const runtime = 'edge'
 export const preferredRegion = 'home'
 
-export default async function AssistantsPage() {
+export default async function AssistantPage({ params }: { params: { id: string } }) {
   const { userId } = auth()
 
   if (!userId) {
-    redirect(`/sign-in?next=/assistants`)
+    redirect(`/sign-in?next=/assistants/${params.id}`)
   }
 
   return (
     <div className="grid h-screen place-items-center">
-      <AddAssistant />
+      assistant {params.id}
     </div>
   )
 }

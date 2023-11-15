@@ -36,15 +36,14 @@ export function EmptyScreen({ setInput, assistants }: Pick<UseChatHelpers, 'setI
         <h1 className="mb-2 mt-8 text-lg font-semibold">Assistants</h1>
         <div className="mt-4 flex flex-col items-start space-y-2">
           {assistants?.map(({ id, name, model }) => (
-            <Button
+            <Link
               key={id}
-              variant="link"
-              className="h-auto p-0 text-base"
-            // onClick={() => setInput(message)}
+              className="flex h-auto items-center p-0 text-base"
+              href={`/assistants/${id}`}
             >
               <IconArrowRight className="mr-2 text-muted-foreground" />
               {name} ({model})
-            </Button>
+            </Link>
           ))}
           <Link className="flex h-auto items-center p-0 text-base" href="/assistants">
             <IconPlus className="mr-2 text-muted-foreground" />

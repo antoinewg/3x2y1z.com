@@ -40,6 +40,9 @@ export async function Header() {
           <IconSeparator className="h-6 w-6 text-muted-foreground/50" />
           <UserButton afterSignOutUrl="/" />
         </div>
+        <Link href="/" rel="nofollow" className='ml-8 font-semibold'>
+          home
+        </Link>
       </div>
       <div className="flex items-center justify-end space-x-2">
         <a
