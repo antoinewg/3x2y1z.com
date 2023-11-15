@@ -5,8 +5,11 @@ import { IconArrowRight } from '@/components/ui/icons'
 import { useQuery } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 import Link from 'next/link'
+import { Assistant } from '@/app/assistants/types'
 
-export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
+export function EmptyScreen({ setInput, assistants }: Pick<UseChatHelpers, 'setInput'> & {
+  assistants?: Assistant[]
+}) {
   const examples = useQuery(api.examples.get)
 
   return (
@@ -31,7 +34,17 @@ export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
         </div>
 
         <h1 className="mb-2 mt-8 text-lg font-semibold">Assistants</h1>
-        {/* TODO: show user assistants */}
+        {assistants?.map(({ id, name, model }) => (
+          <Button
+            key={id}
+            variant="link"
+            className="h-auto p-0 text-base"
+          // onClick={() => setInput(message)}
+          >
+            <IconArrowRight className="mr-2 text-muted-foreground" />
+            {name} ({model})
+          </Button>
+        ))}
         <div className="mt-4 flex flex-col items-start space-y-2">
           <Link className="h-auto p-0 text-base" href="/assistants">
             Add assistant

@@ -8,13 +8,15 @@ import { ChatPanel } from '@/components/chat-panel'
 import { EmptyScreen } from '@/components/empty-screen'
 import { ChatScrollAnchor } from '@/components/chat-scroll-anchor'
 import { toast } from 'react-hot-toast'
+import { Assistant } from '@/app/assistants/types'
 
 export interface ChatProps extends React.ComponentProps<'div'> {
   initialMessages?: Message[]
+  assistants?: Assistant[]
   id?: string
 }
 
-export function Chat({ id, initialMessages, className }: ChatProps) {
+export function Chat({ id, initialMessages, assistants, className }: ChatProps) {
   const { messages, append, reload, stop, isLoading, input, setInput } =
     useChat({
       initialMessages,
@@ -38,7 +40,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
             <ChatScrollAnchor trackVisibility={isLoading} />
           </>
         ) : (
-          <EmptyScreen setInput={setInput} />
+          <EmptyScreen setInput={setInput} assistants={assistants} />
         )}
       </div>
       <ChatPanel
