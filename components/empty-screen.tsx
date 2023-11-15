@@ -1,7 +1,7 @@
 import { UseChatHelpers } from 'ai/react'
 
 import { Button } from '@/components/ui/button'
-import { IconArrowRight } from '@/components/ui/icons'
+import { IconArrowRight, IconPlus } from '@/components/ui/icons'
 import { useQuery } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 import Link from 'next/link'
@@ -34,19 +34,20 @@ export function EmptyScreen({ setInput, assistants }: Pick<UseChatHelpers, 'setI
         </div>
 
         <h1 className="mb-2 mt-8 text-lg font-semibold">Assistants</h1>
-        {assistants?.map(({ id, name, model }) => (
-          <Button
-            key={id}
-            variant="link"
-            className="h-auto p-0 text-base"
-          // onClick={() => setInput(message)}
-          >
-            <IconArrowRight className="mr-2 text-muted-foreground" />
-            {name} ({model})
-          </Button>
-        ))}
         <div className="mt-4 flex flex-col items-start space-y-2">
-          <Link className="h-auto p-0 text-base" href="/assistants">
+          {assistants?.map(({ id, name, model }) => (
+            <Button
+              key={id}
+              variant="link"
+              className="h-auto p-0 text-base"
+            // onClick={() => setInput(message)}
+            >
+              <IconArrowRight className="mr-2 text-muted-foreground" />
+              {name} ({model})
+            </Button>
+          ))}
+          <Link className="flex h-auto items-center p-0 text-base" href="/assistants">
+            <IconPlus className="mr-2 text-muted-foreground" />
             Add assistant
           </Link>
         </div>

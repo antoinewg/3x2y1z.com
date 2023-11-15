@@ -3,7 +3,7 @@
 import { ZodError } from 'zod'
 import { revalidatePath } from 'next/cache'
 import { schema } from './form'
-import OpenAI from 'openai';
+import OpenAI, { OpenAIError } from 'openai';
 import { AssistantCreateParams } from 'openai/resources/beta/assistants/assistants';
 
 const openai = new OpenAI();
@@ -40,10 +40,13 @@ export async function createAssistant(prevState: any, formData: FormData) {
 
     const result = await openai.beta.assistants.create(body)
     console.log("created assistant", result)
-    return revalidatePath('/assistants')
+    return revalidatePath('/')
   } catch (e) {
     if (e instanceof ZodError) {
       return { message: e.errors.map(err => `${err.path}: ${err.message}`).join("\n") }
+    }
+    if (e instanceof OpenAIError) {
+      return { message: e.message }
     }
     return { message: 'Failed to create' }
   }
