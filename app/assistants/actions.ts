@@ -7,7 +7,6 @@ import { schema } from './form'
 
 export async function createAssistant(prevState: any, formData: FormData) {
   try {
-    console.log("formData", formData)
     const parsed = schema.parse({
       name: formData.get('name'),
       model: formData.get('model'),
@@ -18,8 +17,34 @@ export async function createAssistant(prevState: any, formData: FormData) {
       function: formData.get('function'),
     })
 
-    console.log(prevState, parsed)
-    // const response = await fetch("https://api.openai.com/v1/assistants", { body: JSON.stringify({ name, model }) })
+    const tools: Array<{ type: string }> = []
+    if (parsed.retrieval === "on") {
+      tools.push({ type: "retrieval" })
+    }
+    if (parsed.code_interpreter === "on") {
+      tools.push({ type: "code_interpreter" })
+    }
+
+    const body = {
+      model: parsed.model,
+      name: parsed.name,
+      description: parsed.description,
+      instructions: parsed.instructions,
+      tools,
+      file_ids: [],
+      metadata: {},
+    }
+
+    const response = await fetch("https://api.openai.com/v1/assistants", {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+        "OpenAI-Beta": "assistants=v1",
+      },
+    })
+    const result = await response.json();
     return revalidatePath('/assistants')
   } catch (e) {
     if (e instanceof ZodError) {

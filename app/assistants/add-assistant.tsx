@@ -35,9 +35,13 @@ export default function AddAssistant() {
             </SelectContent>
           </Select>
 
-          <Input name="name" placeholder='name' />
-          <Textarea name="description" placeholder='description' />
-          <Textarea name="instructions" placeholder='instructions' />
+          <Input name="name" placeholder='name' defaultValue="Math tutor" />
+          <Textarea name="description" placeholder='description' defaultValue="Math tutor" />
+          <Textarea
+            name="instructions"
+            placeholder='instructions'
+            defaultValue="You are a personal math tutor. When asked a question, write and run Python code to answer the question."
+          />
 
           <h1 className="text-md mt-2 font-semibold">Tools</h1>
 

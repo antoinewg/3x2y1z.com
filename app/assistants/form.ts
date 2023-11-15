@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const MODELS = ["gpt-3", "gpt-4"] as const
+export const MODELS = ["gpt-4", "gpt-4-1106-preview", "gpt-4-32k"] as const
 const SWITCH = ["on", "off"] as const
 
 export const schema = z.object({
