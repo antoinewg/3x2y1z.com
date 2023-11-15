@@ -10,5 +10,6 @@ export const schema = z.object({
   instructions: z.string().max(32768),
   code_interpreter: z.enum(SWITCH).nullable(),
   retrieval: z.enum(SWITCH).nullable(),
+  // TODO(antoinewg): enable function
   function: z.enum(SWITCH).nullable(),
 })
